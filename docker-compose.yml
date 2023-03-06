@@ -1,0 +1,70 @@
+# https://docs.directus.io/self-hosted/docker-guide.html
+version: '3'
+services:
+  cms:
+    container_name: directus-cms
+    build:
+      context: ./directus
+      dockerfile: ./Dockerfile
+    restart: always
+    volumes:
+      - ./directus/uploads:/directus/uploads
+      - ./directus/extensions:/directus/extensions
+    environment:
+      KEY: ${DIRECTUS_KEY}
+      SECRET: ${DIRECTUS_SECRET}
+      DB_CLIENT: 'mysql'
+      DB_HOST: 'directus-database'
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASS}
+      ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASS}
+    depends_on:
+      - directus-database
+    ports:
+      - ${PORT_DIRECTUS}:8055
+
+  php-myadmin:
+    container_name: phpmyadmin
+    build:
+      context: ./phpmyadmin
+      dockerfile: ./Dockerfile
+    restart: always
+    ports:
+      - ${PORT_PHPMYADMIN}:80
+    environment:
+      PMA_HOST: directus-database
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 6G
+    depends_on:
+      - directus-database
+  
+  directus-database:
+    container_name: directus-database
+    image: mysql:8.0
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password --sort_buffer_size=250M
+    environment:
+      MYSQL_USER: "${DB_USER}"
+      MYSQL_PASSWORD: "${DB_PASS}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASS}"
+      MYSQL_DATABASE: "${DB_NAME}"
+      USER: "${LOCAL_ACCOUNT_ID}"
+    volumes:
+      - ./sql-data:/var/lib/mysql
+
+  directus-nextjs:
+    container_name: directus-nextjs
+    build:
+      context: ./nextjs
+      dockerfile: ./Dockerfile
+    restart: always
+    volumes:
+      - ./nextjs/app:/usr/src/app
+    ports:
+      - ${PORT_NEXTJS_WEB}:3000
+    depends_on:
+      - directus-database
+      - directus-cms
