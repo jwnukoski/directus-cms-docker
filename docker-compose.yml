@@ -26,21 +26,6 @@ services:
     ports:
       - ${PORT_DIRECTUS}:8055
 
-  php-myadmin:
-    container_name: phpmyadmin
-    build:
-      context: ./phpmyadmin
-      dockerfile: ./Dockerfile
-    restart: always
-    ports:
-      - ${PORT_PHPMYADMIN}:80
-    environment:
-      PMA_HOST: directus-database
-      PMA_PORT: 3306
-      UPLOAD_LIMIT: 6G
-    depends_on:
-      - directus-database
-  
   directus-database:
     container_name: directus-database
     image: mysql:8.0
