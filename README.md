@@ -10,14 +10,5 @@ Otherwise, you will get 403 errors with content such as images.
 You can also give specific public read permissions to a specific folder for this content to be uploaded to.  
 Refer to the Directus documentation.  
 
-When working with NextJS, you may want to develop with your host machine. To do this, open the SQL port in docker-compose.yml like so:
-```
-directus-database:
-    ...
-    ports:
-        - 3306:3306
-```
-Now just update NextJS to use 'localhost' instead of 'directus-database'.
-
 ## Additional Resources
 - https://docs.directus.io/self-hosted/docker-guide.html
