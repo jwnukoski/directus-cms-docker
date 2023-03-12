@@ -1,5 +1,5 @@
-# https://docs.directus.io/self-hosted/docker-guide.html
-version: '3'
+version: '1'
+
 services:
   directus-cms:
     container_name: directus-cms
